@@ -29,6 +29,11 @@
 		<param-value>classpath:config/spring/applicationContext.xml</param-value>
 	</context-param>
 
+	<context-param>
+		<param-name>log4j-config-location</param-name>
+		<param-value>WEB-INF/classes/config/log4j.properties</param-value>
+	</context-param>
+
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>

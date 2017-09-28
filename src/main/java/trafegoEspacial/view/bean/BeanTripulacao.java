@@ -26,17 +26,17 @@ public final class BeanTripulacao implements InterfaceViewBean {
 	}
 
 	protected void init() {
-		// pesquisar();
+		pesquisar();
 	}
 
-	// public List<EntidadeViagem> pesquisar() {
-	// try {
-	// return armazenamento.filtraViagens("status", filtroViagem.getStatus());
-	// } catch (JsonProcessingException e) {
-	// getLogger().info(e.getMessage(), e);
-	// }
-	// return new ArrayList<>();
-	// }
+	public List<EntidadeViagem> pesquisar() {
+		try {
+			return armazenamento.filtraViagens("status", filtroViagem.getStatus());
+		} catch (JsonProcessingException e) {
+			getLogger().info(e.getMessage(), e);
+		}
+		return new ArrayList<>();
+	}
 
 	public String getChave() {
 		return chave;

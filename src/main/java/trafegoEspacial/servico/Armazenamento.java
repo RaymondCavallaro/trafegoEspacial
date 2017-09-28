@@ -27,9 +27,8 @@ import trafegoEspacial.entidade.EntidadeViagem;
 @Scope(WebApplicationContext.SCOPE_APPLICATION)
 public class Armazenamento {
 
-	// private static final String CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR =
-	// "armazenamento.mapa.filtro.valor";
-	private static final String CHAVE_ARMAZENAMENTOMAPA_FILTROIN = "armazenamento.mapa.filtro.in";
+	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR = "armazenamento.mapa.filtro.valor";
+	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROIN = "armazenamento.mapa.filtro.in";
 
 	@Autowired
 	private ProcessadorMensagem processadorArmazenamento;
@@ -43,18 +42,19 @@ public class Armazenamento {
 	@Resource(name = "mapaViagem")
 	private Map<String, EntidadeViagem> mapaViagem;
 
-	public List<EntidadeViagem> filtraViagens(String campo, String valorJson) throws JsonProcessingException {
-		return filtraViagens(mapaViagem.values(), campo, valorJson);
+	public List<EntidadeViagem> filtraViagens(String chaveFiltro, String campo, String valorJson)
+			throws JsonProcessingException {
+		return filtraViagens(mapaViagem.values(), chaveFiltro, campo, valorJson);
 	}
 
-	public List<EntidadeViagem> filtraViagens(Collection<EntidadeViagem> viagens, String campo, String valorJson)
-			throws JsonProcessingException {
+	public List<EntidadeViagem> filtraViagens(Collection<EntidadeViagem> viagens, String chaveFiltro, String campo,
+			String valorJson) throws JsonProcessingException {
 		List<EntidadeViagem> filtrado = new ArrayList<>();
 		if (!mapaViagem.isEmpty()) {
 			Map<String, Object> dados = new HashMap<>();
 			dados.put("campo", campo);
 			dados.put("valor", valorJson);
-			String expressao = processadorArmazenamento.resolveExpressaoChave(CHAVE_ARMAZENAMENTOMAPA_FILTROIN, dados);
+			String expressao = processadorArmazenamento.resolveExpressaoChave(chaveFiltro, dados);
 			ObjectMapper mapper = new ObjectMapper();
 			String json = mapper.writeValueAsString(viagens);
 			List<String> idViagens = JsonPath.read(json, expressao);

@@ -24,7 +24,6 @@ import trafegoEspacial.entidade.EntidadePlaneta;
 import trafegoEspacial.entidade.EntidadeViagem;
 import trafegoEspacial.entidade.view.EntidadeFiltroViagem;
 import trafegoEspacial.servico.Armazenamento;
-import trafegoEspacial.servico.ServicoSwabi;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
@@ -70,7 +69,7 @@ public final class BeanViagem implements InterfaceViewBean {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			String json = mapper.writeValueAsString(filtroViagem.getStatus());
-			return armazenamento.filtraViagens("status", json);
+			return armazenamento.filtraViagens(Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROIN, "status", json);
 		} catch (JsonProcessingException e) {
 			getLogger().info(e.getMessage(), e);
 		}
@@ -88,10 +87,11 @@ public final class BeanViagem implements InterfaceViewBean {
 			adicionar = true;
 		} else {
 			EntidadePlaneta planetaPartida = viagensNave.get(viagensNave.size() - 1).getDestino();
-			if (!beanSelecionados.getFiltroSelecionados().getPlaneta().equals(planetaPartida)) {
+			if (beanSelecionados.getFiltroSelecionados().getPlaneta().equals(planetaPartida)) {
 				String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_PARTIDAIGUALDESTINO, new Object[0], null);
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
+			} else {
 				adicionar = true;
 			}
 		}
@@ -122,7 +122,21 @@ public final class BeanViagem implements InterfaceViewBean {
 		if (EntidadeViagem.VIAGEM_STATUS_EM_CURSO.equals(viagem.getStatus())) {
 			viagem.setStatus(EntidadeViagem.VIAGEM_STATUS_FINALIZADA);
 		} else {
-			// viagem futura
+			try {
+				List<EntidadeViagem> resultado = armazenamento.filtraViagens(viagem.getNave().getViagens(),
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR, "status",
+						EntidadeViagem.VIAGEM_STATUS_EM_CURSO);
+				assert (resultado != null);
+				assert (resultado.size() == 1);
+				int indexCurso = viagem.getNave().getViagens().indexOf(resultado.get(0));
+				for (int i = indexCurso; i == index; i++) {
+					viagem.getNave().getViagens().get(i).setStatus(EntidadeViagem.VIAGEM_STATUS_FINALIZADA);
+				}
+			} catch (JsonProcessingException e) {
+				getLogger().warn(e.getMessage(), e);
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
+			}
 		}
 		if (index > 0) {
 

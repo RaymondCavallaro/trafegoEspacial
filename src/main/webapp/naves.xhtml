@@ -16,6 +16,9 @@
 	<ui:define name="pagina.conteudo">
 		<h:form>
 			<p:panel>
+				<f:facet name="header">
+				Filtros
+				</f:facet>
 				<p:panelGrid columns="1" layout="grid">
 					<h:panelGrid columns="1">
 						<h:outputText value="filtro: " style="font-weight: bold" />
@@ -26,9 +29,8 @@
 					</h:panelGrid>
 				</p:panelGrid>
 				<p:toolbarGroup>
-					<p:commandButton id="btnPesquisar"
-						value="#{msgs.map['entidade.pesquisar']}"
-						icon="ui-icon-search"
+					<p:commandButton id="btnPesquisar" style="font-size: 0.8em;"
+						value="#{msgs.map['entidade.pesquisar']}" icon="ui-icon-search"
 						actionListener="#{beanNave.pesquisar()}" />
 				</p:toolbarGroup>
 			</p:panel>
@@ -56,9 +58,23 @@
 						<h:outputText value="#{nave.modelo}" style="font-weight: bold;" />
 					</p:column>
 					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.voos']}</f:facet>
+						<h:outputText value="#{fn:length(MyBean.somelist)}"
+							style="font-weight: bold;" />
+						<p:column>
+							<p:commandButton id="btnViagens"
+								value="#{msgs.map['entidade.nave.propriedade.voos.ver']}"
+								title="#{msgs.map['entidade.nave.propriedade.voos.ver.title']}"
+								style="font-size: 0.8em;" icon="fa fa-fw fa-search"
+								actionListener="#{beanNave.selecionaNave(nave)}"
+								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
+						</p:column>
+					</p:column>
+					<p:column>
 						<p:commandButton id="btnSelecionar"
 							value="#{msgs.map['entidade.selecionar']}"
-							style="font-size: 0.8em;" icon="ui-icon-folder-open"
+							title="#{msgs.map['entidade.selecionar.title']}"
+							style="font-size: 0.8em;" icon="fa fa-fw fa-folder-open"
 							actionListener="#{beanNave.selecionaNave(nave)}" />
 					</p:column>
 				</p:dataTable>
