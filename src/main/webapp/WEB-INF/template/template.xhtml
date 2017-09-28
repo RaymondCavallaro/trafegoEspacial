@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite" lang="pt-br">
+
+<f:view encoding="ISO-8859-1">
+	<h:head>
+		<title>#{msgs.map['template.titulo']}</title>
+		<meta http-equiv="Content-Type"
+			content="text/html; charset=ISO-8859-1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	</h:head>
+
+	<h:body>
+		<ui:insert name="growl">
+			<p:growl id="growl" showDetail="true" globalOnly="true"
+				autoUpdate="true" showSummary="false" sticky="true" />
+		</ui:insert>
+
+		<div class="outer">
+
+			<div class="limit">
+
+				<div class="header">
+					<ui:insert name="pagina.cabecalho">
+						<h1>#{msgs.map['template.cabecalho']}</h1>
+					</ui:insert>
+				</div>
+
+				<ui:insert name="ajaxStatus">
+					<p:ajaxStatus id="ajaxStatus" onstart="statusDialogWidget.show();"
+						onsuccess="statusDialogWidget.hide();"
+						onerror="window.location = '#{facesContext.externalContext.requestContextPath}'" />
+
+					<p:dialog modal="true" widgetVar="statusDialogWidget"
+						showHeader="false" draggable="false" closable="false"
+						resizable="false">
+						<h1>#{msgs.map['template.carregando']}</h1>
+					</p:dialog>
+				</ui:insert>
+
+				<div class="content">
+					<h2>
+						<ui:insert name="pagina.titulo" />
+					</h2>
+
+					<ui:insert name="pagina.selecao" />
+					<ui:insert name="pagina.conteudo" />
+				</div>
+
+				<!-- FOOTER -->
+				<div class="footer"></div>
+
+			</div>
+		</div>
+
+	</h:body>
+</f:view>
+
+</html>

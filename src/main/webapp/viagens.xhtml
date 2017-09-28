@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	template="/WEB-INF/template/selecionados.xhtml">
+
+	<ui:define name="pagina.titulo">
+		<h:outputText value="#{msgs.map['pagina.viagens.titulo']}" />
+	</ui:define>
+
+	<ui:define name="pagina.conteudo">
+		<h:form>
+			<p:panel>
+				<f:facet name="header">
+				Filtros
+				</f:facet>
+				<p:panelGrid columns="3" layout="grid">
+					<h:panelGrid columns="2">
+						<h:outputText value="Filtrar aeronave" style="font-weight: bold" />
+						<p:inputSwitch value="#{beanViagem.filtroViagem.filtraNave}"
+							style="font-size: 0.8em;"
+							disabled="#{empty beanSelecionados.filtroSelecionados.nave}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:outputText value="Filtrar Planeta destino"
+							style="font-weight: bold" />
+						<p:inputSwitch value="#{beanViagem.filtroViagem.filtraPlaneta}"
+							style="font-size: 0.8em;"
+							disabled="#{empty beanSelecionados.filtroSelecionados.planeta}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:outputText value="Filtrar Tripulante" style="font-weight: bold" />
+						<p:inputSwitch value="#{beanViagem.filtroViagem.filtraTripulante}"
+							style="font-size: 0.8em;"
+							disabled="#{empty beanSelecionados.filtroSelecionados.tripulante}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:outputText value="Status" style="font-weight: bold" />
+						<p:selectManyMenu value="#{beanViagem.filtroViagem.status}"
+							showCheckbox="true">
+							<f:selectItems value="#{beanViagem.viagemStatus}"
+								style="font-size: 0.8em;" var="statusCode"
+								itemLabel="#{msgs.map[statusCode]}" />
+						</p:selectManyMenu>
+					</h:panelGrid>
+				</p:panelGrid>
+			</p:panel>
+			<p:panel>
+				<p:messages for="btnNovo" />
+				<p:toolbarGroup>
+					<p:commandButton id="btnNovo" value="#{msgs.map['entidade.novo']}"
+						style="font-size: 0.8em;" icon="ui-icon-plus"
+						actionListener="#{beanViagem.novo()}" />
+					<p:commandButton id="btnPesquisar"
+						value="#{msgs.map['entidade.pesquisar']} "
+						style="font-size: 0.8em;" icon="ui-icon-search"
+						actionListener="#{beanViagem.pesquisar()}" />
+				</p:toolbarGroup>
+			</p:panel>
+			<p:panel>
+				<p:dataTable value="#{beanViagem.pesquisar()}" var="viagem"
+					rows="10" emptyMessage="#{msgs.map['entidade.viagem.lista.vazia']}">
+					<f:facet name="header">#{msgs.map['entidade.viagem.lista.titulo']}</f:facet>
+					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.identificacao']}</f:facet>
+						<h:outputText value="#{viagem.chave}" style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.viagem.propriedade.nave']}</f:facet>
+						<h:outputText value="#{viagem.nave.nome}"
+							style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.viagem.propriedade.destino']}</f:facet>
+						<h:outputText value="#{viagem.destino.nome}"
+							style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.viagem.propriedade.status']}</f:facet>
+						<h:outputText value="#{msgs.map[viagem.status]}"
+							style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<p:commandButton id="btnFinalizar" style="font-size: 0.8em;"
+							value="#{msgs.map['entidade.viagem.finalizar']}"
+							icon="fa fa-fw fa-forward"
+							actionListener="#{beanViagem.finalizar(viagem)}" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	template="/WEB-INF/template/selecionados.xhtml">
+
+	<ui:define name="pagina.titulo">
+		<h:outputText value="#{msgs.map['pagina.naves.titulo']}" />
+	</ui:define>
+
+	<ui:define name="pagina.conteudo">
+		<h:form>
+			<p:panel>
+				<p:panelGrid columns="1" layout="grid">
+					<h:panelGrid columns="1">
+						<h:outputText value="filtro: " style="font-weight: bold" />
+						<h:panelGrid columns="2">
+							<p:inputText label="Nome" value="#{beanNave.filtroNaves.nome}"
+								style="width:350px" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panelGrid>
+				<p:toolbarGroup>
+					<p:commandButton id="btnPesquisar"
+						value="#{msgs.map['template.pesquisar']}"
+						style="font-size: 0.8em;" icon="ui-icon-search"
+						actionListener="#{beanNave.pesquisar()}" />
+				</p:toolbarGroup>
+			</p:panel>
+			<p:panel>
+				<p:dataTable value="#{beanNave.datamodelNave}" var="nave"
+					lazy="true" rows="10" rowsPerPageTemplate="10,50,100"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					emptyMessage="#{msgs.map['entidade.nave.lista.vazia']}">
+					<f:facet name="header">#{msgs.map['entidade.nave.lista.titulo']}</f:facet>
+					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.identificacao']}</f:facet>
+						<h:outputText value="#{nave.url}" style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.nome']}</f:facet>
+						<h:outputText value="#{nave.nome}" style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">Passageiros</f:facet>
+						<h:outputText value="#{nave.passageiros}"
+							style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">Modelo</f:facet>
+						<h:outputText value="#{nave.modelo}" style="font-weight: bold;" />
+					</p:column>
+					<p:column>
+						<p:commandButton id="btnSelecionar"
+							value="#{msgs.map['template.selecionar']}"
+							style="font-size: 0.8em;" icon="ui-icon-search"
+							actionListener="#{beanNave.selecionaNave(nave)}" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

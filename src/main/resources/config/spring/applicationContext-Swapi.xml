@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<bean id="swapiMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:config/servico/swapi" />
+		<property name="fallbackToSystemLocale" value="false" />
+	</bean>
+
+	<bean id="processadorMensagemSwapi" class="trafegoEspacial.servico.ProcessadorMensagem">
+		<property name="messageSourceChave" ref="swapiMessageSource" />
+	</bean>
+
+</beans>
