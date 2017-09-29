@@ -36,6 +36,8 @@ public final class BeanViagem implements InterfaceViewBean {
 	private static final String CHAVE_VALIDACAO_NAOPOSSUINAVE = "entidade.viagem.novo.validacao.naoPossuiNave";
 	private static final String CHAVE_VALIDACAO_NAOPOSSUIDESTINO = "entidade.viagem.novo.validacao.naoPossuiDestino";
 	private static final String CHAVE_VALIDACAO_PARTIDAIGUALDESTINO = "entidade.viagem.novo.validacao.partidaIgualDestino";
+	private static final String CHAVE_VALIDACAO_TRIPULANTEEXISTENTE = "entidade.viagem.propriedade.tripulantes.adicionar.validacao.tripulanteExistente";
+	public static final String CHAVE_VALIDACAO_LOTADO = "entidade.viagem.propriedade.tripulantes.adicionar.validacao.lotado";
 
 	private static final List<String> VIAGEM_STATUS = new ArrayList<>(
 			Arrays.asList(EntidadeViagem.VIAGEM_STATUS_FINALIZADA, EntidadeViagem.VIAGEM_STATUS_EM_CURSO,
@@ -88,18 +90,18 @@ public final class BeanViagem implements InterfaceViewBean {
 			} else if (filtroViagem.getFiltraTripulante()
 					&& beanSelecionados.getFiltroSelecionados().getTripulante() != null) {
 				colecaoFiltrada = armazenamento.filtraViagens(colecaoFiltrada,
-						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROCONJUNTO, "tripulantes",
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROCONJUNTO, "tripulantes", "chave",
 						beanSelecionados.getFiltroSelecionados().getTripulante().getUrl());
 			}
 			if (filtroViagem.getFiltraPlaneta() && beanSelecionados.getFiltroSelecionados().getPlaneta() != null) {
 				colecaoFiltrada = armazenamento.filtraViagens(colecaoFiltrada,
-						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR, "destino.url",
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR, "destino.url", "chave",
 						beanSelecionados.getFiltroSelecionados().getPlaneta().getUrl());
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			String json = mapper.writeValueAsString(filtroViagem.getStatus());
 			return armazenamento.filtraViagens(colecaoFiltrada, Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROIN,
-					"status", json);
+					"status", "chave", json);
 		} catch (
 
 		JsonProcessingException e) {
@@ -156,9 +158,17 @@ public final class BeanViagem implements InterfaceViewBean {
 		viagem = armazenamento.atualizaViagem(viagem);
 		EntidadeTripulante tripulante = armazenamento
 				.atualizaTripulacao(beanSelecionados.getFiltroSelecionados().getTripulante());
-		if (!viagem.getTripulantes().contains(tripulante)) {
+		if (viagem.getTripulantes().contains(tripulante)) {
+			String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_TRIPULANTEEXISTENTE, new Object[0], null);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
+		} else if (viagem.getNave().getPassageiros() > viagem.getTripulantes().size()) {
 			viagem.getTripulantes().add(tripulante);
 			tripulante.getViagens().add(viagem);
+		} else {
+			String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_LOTADO, new Object[0], null);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
 		}
 	}
 
@@ -169,7 +179,7 @@ public final class BeanViagem implements InterfaceViewBean {
 		} else {
 			try {
 				List<EntidadeViagem> resultado = armazenamento.filtraViagens(viagem.getNave().getViagens(),
-						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR, "status",
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR, "status", "chave",
 						EntidadeViagem.VIAGEM_STATUS_EM_CURSO);
 				assert (resultado != null);
 				assert (resultado.size() == 1);
@@ -186,6 +196,12 @@ public final class BeanViagem implements InterfaceViewBean {
 		if (index > 0) {
 
 		}
+	}
+
+	public void selecionaNave(EntidadeNave nave) {
+		beanSelecionados.getFiltroSelecionados().setNave(nave);
+		init();
+		filtroViagem.setFiltraNave(true);
 	}
 
 	public void selecionaViagem(EntidadeViagem viagem) {

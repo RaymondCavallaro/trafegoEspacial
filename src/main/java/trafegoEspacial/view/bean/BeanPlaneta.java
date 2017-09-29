@@ -24,7 +24,7 @@ import trafegoEspacial.servico.bean.ServicoSwabi;
 @Scope(WebApplicationContext.SCOPE_SESSION)
 public class BeanPlaneta implements InterfaceViewBean {
 
-	private final String CHAVE_VIEW = "planetas";
+	private static final String CHAVE_VIEW = "planetas";
 
 	@Autowired
 	private ServicoBuscaDadosSwapi servicoBuscaDadosSwapi;

@@ -97,14 +97,26 @@ public final class BeanTripulante implements InterfaceViewBean {
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
 		} else {
 			EntidadeViagem viagem = armazenamento.atualizaViagem(beanSelecionados.getFiltroSelecionados().getViagem());
-			for (InterfaceEntidade entidade : tabela.getSelecao()) {
-				EntidadeTripulante tripulante = armazenamento.atualizaTripulacao((EntidadeTripulante) entidade);
-				if (!viagem.getTripulantes().contains(tripulante)) {
-					viagem.getTripulantes().add(tripulante);
-					tripulante.getViagens().add(viagem);
+			if (viagem.getNave().getPassageiros() > (viagem.getTripulantes().size() + tabela.getSelecao().size())) {
+				for (InterfaceEntidade entidade : tabela.getSelecao()) {
+					EntidadeTripulante tripulante = armazenamento.atualizaTripulacao((EntidadeTripulante) entidade);
+					if (!viagem.getTripulantes().contains(tripulante)) {
+						viagem.getTripulantes().add(tripulante);
+						tripulante.getViagens().add(viagem);
+					}
 				}
+			} else {
+				String mensagem = mensagens.getMessage(BeanViagem.CHAVE_VALIDACAO_LOTADO, new Object[0], null);
+				FacesContext.getCurrentInstance().addMessage("btnAdicionar",
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
 			}
 		}
+	}
+
+	public void selecionaViagem(EntidadeViagem viagem) {
+		beanSelecionados.getFiltroSelecionados().setViagem(viagem);
+		init();
+		filtroTripulante.setFiltraViagem(true);
 	}
 
 	public void selecionaTripulante(EntidadeTripulante tripulante) {

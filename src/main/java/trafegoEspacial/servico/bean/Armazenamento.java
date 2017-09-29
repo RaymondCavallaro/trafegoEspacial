@@ -31,6 +31,8 @@ public class Armazenamento {
 	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR = "armazenamento.mapa.filtro.valor";
 	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROIN = "armazenamento.mapa.filtro.in";
 	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROCONJUNTO = "armazenamento.mapa.filtro.conjunto";
+	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROCRUZADO = "armazenamento.mapa.filtro.cruzado";
+	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROCHAVE = "armazenamento.mapa.filtro.chave";
 
 	@Autowired
 	private ProcessadorMensagem processadorArmazenamento;
@@ -44,27 +46,56 @@ public class Armazenamento {
 	@Resource(name = "mapaViagem")
 	private Map<String, EntidadeViagem> mapaViagem;
 
-	public List<EntidadeViagem> filtraViagens(String chaveFiltro, String campo, String valorJson)
-			throws JsonProcessingException {
-		return filtraViagens(mapaViagem.values(), chaveFiltro, campo, valorJson);
+	public List<EntidadeViagem> filtraViagens(String chaveFiltro, String campoFiltro, String campoRetorno,
+			String valorJson) throws JsonProcessingException {
+		if (mapaViagem.isEmpty()) {
+			return new ArrayList<>();
+		}
+		return filtraViagens(mapaViagem.values(), chaveFiltro, campoFiltro, campoRetorno, valorJson);
 	}
 
-	public List<EntidadeViagem> filtraViagens(Collection<EntidadeViagem> viagens, String chaveFiltro, String campo,
-			String valorJson) throws JsonProcessingException {
-		List<EntidadeViagem> filtrado = new ArrayList<>();
-		if (!mapaViagem.isEmpty()) {
-			Map<String, Object> dados = new HashMap<>();
-			dados.put("campo", campo);
-			dados.put("valor", valorJson);
-			String expressao = processadorArmazenamento.resolveExpressaoChave(chaveFiltro, dados);
-			ObjectMapper mapper = new ObjectMapper();
-			String json = mapper.writeValueAsString(viagens);
-			List<String> idViagens = JsonPath.read(json, expressao);
+	public List<EntidadeViagem> filtraViagens(Collection<EntidadeViagem> viagens, String chaveFiltro,
+			String campoFiltro, String campoRetorno, String valorJson) throws JsonProcessingException {
+		List<String> idViagens = filtra(viagens, chaveFiltro, campoFiltro, campoRetorno, valorJson);
+		return filtra(mapaViagem, idViagens);
+	}
+
+	public void adicionaNaves(Collection<EntidadeNave> naves) {
+		synchronized (mapaNave) {
+			for (EntidadeNave nave : naves) {
+				if (!mapaNave.containsKey(nave.getChaveEntidade())) {
+					mapaNave.put(nave.getChaveEntidade(), nave);
+				}
+			}
+		}
+	}
+
+	public <T> List<T> filtra(Map<String, T> viagens, List<String> idViagens) {
+		List<T> filtrado = new ArrayList<>();
+		if (!viagens.isEmpty()) {
 			for (String idViagem : idViagens) {
-				filtrado.add(mapaViagem.get(idViagem));
+				filtrado.add(viagens.get(idViagem));
 			}
 		}
 		return filtrado;
+	}
+
+	public <T> List<String> filtra(Collection<T> viagens, String chaveFiltro, String campoFiltro, String campoRetorno,
+			String valorJson) throws JsonProcessingException {
+		Map<String, Object> dados = new HashMap<>();
+		dados.put("campo", campoFiltro);
+		dados.put("chave", campoRetorno);
+		dados.put("valor", valorJson);
+		return filtra(viagens, chaveFiltro, dados);
+	}
+
+	public <T> List<String> filtra(Collection<T> viagens, String chaveFiltro, Map<String, Object> dados)
+			throws JsonProcessingException {
+		String expressao = processadorArmazenamento.resolveExpressaoChave(chaveFiltro, dados);
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(viagens);
+		List<String> idViagens = JsonPath.read(json, expressao);
+		return idViagens;
 	}
 
 	public EntidadeTripulante atualizaTripulacao(EntidadeTripulante tripulante) {

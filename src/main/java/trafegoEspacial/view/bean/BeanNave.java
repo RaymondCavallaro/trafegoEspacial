@@ -1,5 +1,10 @@
 package trafegoEspacial.view.bean;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -9,12 +14,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import trafegoEspacial.comportamento.InterfaceBuscadorDados;
 import trafegoEspacial.comportamento.InterfaceEntidade;
 import trafegoEspacial.comportamento.InterfaceViewBean;
 import trafegoEspacial.comportamento.TabelaSwapi;
 import trafegoEspacial.entidade.EntidadeNave;
 import trafegoEspacial.entidade.servico.EntidadeDadosServicoSwapi;
+import trafegoEspacial.servico.bean.Armazenamento;
 import trafegoEspacial.servico.bean.BeanSelecionados;
 import trafegoEspacial.servico.bean.ConversorSwapi;
 import trafegoEspacial.servico.bean.ServicoBuscaDadosSwapi;
@@ -24,7 +32,10 @@ import trafegoEspacial.servico.bean.ServicoSwabi;
 @Scope(WebApplicationContext.SCOPE_SESSION)
 public class BeanNave implements InterfaceViewBean {
 
-	private final String CHAVE_VIEW = "naves";
+	private static final String CHAVE_VIEW = "naves";
+
+	@Autowired
+	private Armazenamento armazenamento;
 
 	@Autowired
 	private ServicoBuscaDadosSwapi servicoBuscaDadosSwapi;
@@ -55,7 +66,26 @@ public class BeanNave implements InterfaceViewBean {
 			@Override
 			public InterfaceEntidade[] buscaDados(EntidadeDadosServicoSwapi dadosBusca) throws Exception {
 				InterfaceEntidade[] naves = servicoSwabi.buscaNavesPagina(dadosBusca);
-				return naves;
+				List<EntidadeNave> listNaves = new ArrayList<>(Arrays.asList((EntidadeNave[]) naves));
+				armazenamento.adicionaNaves(listNaves);
+				List<String> chaves = armazenamento.filtra(listNaves, Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROCHAVE,
+						"", "url", "");
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(chaves);
+				List<String> idsNavesFiltrada = armazenamento.filtra(armazenamento.getMapaViagem().values(),
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROCRUZADO, "tripulantes", "nave.url", json);
+				chaves.removeAll(idsNavesFiltrada);
+				if (!chaves.isEmpty()) {
+					for (Iterator<EntidadeNave> iterator = listNaves.iterator(); iterator.hasNext();) {
+						EntidadeNave nave = iterator.next();
+						if (!chaves.contains(nave.getUrl())) {
+							iterator.remove();
+						}
+					}
+				}
+				List<EntidadeNave> navesFiltradas = armazenamento.filtra(armazenamento.getMapaNave(), idsNavesFiltrada);
+				listNaves.addAll(navesFiltradas);
+				return listNaves.toArray(new InterfaceEntidade[0]);
 			}
 		};
 		tabela = new TabelaSwapi(servicoBuscaDadosSwapi, conversor, buscador);

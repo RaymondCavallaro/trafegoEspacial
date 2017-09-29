@@ -97,15 +97,14 @@
 								value="#{msgs.map['entidade.viagem.propriedade.tripulantes.ver']}"
 								title="#{msgs.map['entidade.viagem.propriedade.tripulantes.ver.title']}"
 								style="font-size: 0.8em;" icon="fa fa-fw fa-folder-open"
-								actionListener="#{beanViagem.selecionaViagem(viagem)}"
-								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
+								actionListener="#{beanTripulante.selecionaViagem(viagem)}"
+								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanTripulante.chave)}" />
 							<p:commandButton id="btnAdicionarTripulante"
 								value="#{msgs.map['entidade.viagem.propriedade.tripulantes.ver']}"
 								title="#{msgs.map['entidade.viagem.propriedade.tripulantes.adicionar.title']}"
 								style="font-size: 0.8em;" icon="fa fa-fw fa-plus"
 								disabled="#{empty beanSelecionados.filtroSelecionados.tripulante}"
-								actionListener="#{beanViagem.adicionarTripulante(viagem)}"
-								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
+								actionListener="#{beanViagem.adicionarTripulante(viagem)}" />
 						</p:column>
 					</p:column>
 					<p:column>
