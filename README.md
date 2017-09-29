@@ -45,11 +45,11 @@ mvn clean tomcat7:run
 
 ###### Contruindo o projeto e gerando os artefatos
 
-####### Comando
+###### Comando
 
 na pasta base (local onde o projeto foi baixado) executar o seguinte comando
 
 ```shell
 mvn clean install
 ```
-isso vai gerar o artefato trafegoEspacial.war
+isso vai gerar o artefato trafegoEspacial.war dentro da pasta target na pasta base
