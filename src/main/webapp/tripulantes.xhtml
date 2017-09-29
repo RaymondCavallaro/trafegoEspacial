@@ -10,56 +10,75 @@
 	template="/WEB-INF/template/selecionados.xhtml">
 
 	<ui:define name="pagina.titulo">
-		<h:outputText value="#{msgs.map['pagina.naves.titulo']}" />
+		<h:outputText value="#{msgs.map['pagina.tripulantes.titulo']}" />
 	</ui:define>
 
 	<ui:define name="pagina.conteudo">
 		<h:form>
 			<p:panel>
+				<f:facet name="header">
+				Filtrar Tripulantes
+				</f:facet>
 				<p:panelGrid columns="1" layout="grid">
+					<h:panelGrid columns="2">
+						<h:outputText value="Filtrar pela Viagem"
+							style="font-weight: bold" />
+						<p:inputSwitch
+							value="#{beanTripulante.filtroTripulante.filtraViagem}"
+							style="font-size: 0.8em;"
+							disabled="#{empty beanSelecionados.filtroSelecionados.viagem}" />
+					</h:panelGrid>
 					<h:panelGrid columns="1">
 						<h:outputText value="filtro: " style="font-weight: bold" />
 						<h:panelGrid columns="2">
-							<p:inputText label="Nome" value="#{beanNave.filtroNaves.nome}"
-								style="width:350px" />
+							<p:inputText label="Nome"
+								value="#{beanNave.tabela.filtro.filtro}" style="width:350px" />
 						</h:panelGrid>
 					</h:panelGrid>
 				</p:panelGrid>
 				<p:toolbarGroup>
-					<p:commandButton id="btnPesquisar"
-						value="#{msgs.map['template.pesquisar']}"
-						style="font-size: 0.8em;" icon="ui-icon-search"
-						actionListener="#{beanNave.pesquisar()}" />
+					<p:commandButton id="btnPesquisar" style="font-size: 0.8em;"
+						value="#{msgs.map['entidade.pesquisar']}"
+						icon="fa fa-fw fa-search"
+						actionListener="#{beanTripulante.tabela.pesquisar()}" />
 				</p:toolbarGroup>
 			</p:panel>
 			<p:panel>
-				<p:dataTable value="#{beanNave.datamodelNave}" var="nave"
-					lazy="true" rows="10" rowsPerPageTemplate="10,50,100"
+				<p:messages for="btnAdicionar" />
+				<p:toolbarGroup>
+					<p:commandButton id="btnAdicionar" style="font-size: 0.8em;"
+						value="#{msgs.map['entidade.viagem.tripulante.adicionar']}"
+						title="#{msgs.map['entidade.viagem.tripulante.adicionar.title']}"
+						icon="fa fa-fw fa-plus"
+						actionListener="#{beanTripulante.adicionar()}" />
+				</p:toolbarGroup>
+				<p:dataTable value="#{beanTripulante.tabela.datamodelEntidade}"
+					var="tripulante" lazy="true" selectionMode="multiple"
+					selection="#{beanTripulante.tabela.selecao}" rows="10"
+					rowsPerPageTemplate="10,50,100"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-					emptyMessage="#{msgs.map['entidade.nave.lista.vazia']}">
-					<f:facet name="header">#{msgs.map['entidade.nave.lista.titulo']}</f:facet>
+					emptyMessage="#{msgs.map['entidade.tripulante.lista.vazia']}">
+					<f:facet name="header">#{msgs.map['entidade.tripulante.lista.titulo']}</f:facet>
 					<p:column>
 						<f:facet name="header">#{msgs.map['entidade.identificacao']}</f:facet>
-						<h:outputText value="#{nave.url}" style="font-weight: bold;" />
+						<h:outputText value="#{tripulante.url}" style="font-weight: bold;" />
 					</p:column>
 					<p:column>
-						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.nome']}</f:facet>
-						<h:outputText value="#{nave.nome}" style="font-weight: bold;" />
-					</p:column>
-					<p:column>
-						<f:facet name="header">Passageiros</f:facet>
-						<h:outputText value="#{nave.passageiros}"
+						<f:facet name="header">#{msgs.map['entidade.tripulante.propriedade.nome']}</f:facet>
+						<h:outputText value="#{tripulante.nome}"
 							style="font-weight: bold;" />
 					</p:column>
 					<p:column>
-						<f:facet name="header">Modelo</f:facet>
-						<h:outputText value="#{nave.modelo}" style="font-weight: bold;" />
+						<f:facet name="header">#{msgs.map['entidade.tripulante.propriedade.genero']}</f:facet>
+						<h:outputText value="#{tripulante.genero}"
+							style="font-weight: bold;" />
 					</p:column>
 					<p:column>
 						<p:commandButton id="btnSelecionar"
-							value="#{msgs.map['template.selecionar']}"
-							style="font-size: 0.8em;" icon="ui-icon-search"
-							actionListener="#{beanNave.selecionaNave(nave)}" />
+							value="#{msgs.map['entidade.selecionar']}"
+							title="#{msgs.map['entidade.selecionar.title']}"
+							style="font-size: 0.8em;" icon="fa fa-fw fa-check"
+							actionListener="#{beanTripulante.selecionaTripulante(tripulante)}" />
 					</p:column>
 				</p:dataTable>
 			</p:panel>

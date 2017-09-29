@@ -1,22 +1,10 @@
 package trafegoEspacial.view.bean;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.ws.rs.ProcessingException;
 
-import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -24,37 +12,33 @@ import org.springframework.web.context.WebApplicationContext;
 import trafegoEspacial.comportamento.InterfaceBuscadorDados;
 import trafegoEspacial.comportamento.InterfaceEntidade;
 import trafegoEspacial.comportamento.InterfaceViewBean;
+import trafegoEspacial.comportamento.TabelaSwapi;
 import trafegoEspacial.entidade.EntidadePlaneta;
 import trafegoEspacial.entidade.servico.EntidadeDadosServicoSwapi;
-import trafegoEspacial.entidade.view.EntidadeFiltroDjango;
-import trafegoEspacial.servico.ConversorNaveSwapi;
-import trafegoEspacial.servico.ServicoSwabi;
-import trafegoEspacial.view.componente.DatamodelEntidade;
+import trafegoEspacial.servico.bean.BeanSelecionados;
+import trafegoEspacial.servico.bean.ConversorSwapi;
+import trafegoEspacial.servico.bean.ServicoBuscaDadosSwapi;
+import trafegoEspacial.servico.bean.ServicoSwabi;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 public class BeanPlaneta implements InterfaceViewBean {
 
-	private final String chave = "planetas";
+	private final String CHAVE_VIEW = "planetas";
 
 	@Autowired
-	private BeanSelecionados beanSelecionados;
-
-	@Autowired
-	private BeanBreadcrumb beanBreadcrumb;
+	private ServicoBuscaDadosSwapi servicoBuscaDadosSwapi;
 
 	@Autowired
 	private ServicoSwabi servicoSwabi;
 
 	@Autowired
-	private ConversorNaveSwapi conversorNave;
+	private BeanSelecionados beanSelecionados;
 
 	@Autowired
-	private MessageSource mensagens;
+	private ConversorSwapi conversor;
 
-	private EntidadeFiltroDjango filtro;
-
-	private DatamodelEntidade datamodelNave;
+	private TabelaSwapi tabela;
 
 	public Logger getLogger() {
 		return LoggerFactory.getLogger(getClass());
@@ -66,65 +50,23 @@ public class BeanPlaneta implements InterfaceViewBean {
 	}
 
 	private void init() {
-		filtro = new EntidadeFiltroDjango();
-		pesquisar();
-	}
-
-	public void pesquisar() {
-		datamodelNave = new DatamodelEntidade((InterfaceBuscadorDados) new InterfaceBuscadorDados() {
+		InterfaceBuscadorDados buscador = new InterfaceBuscadorDados() {
 
 			@Override
-			public Map<String, InterfaceEntidade> buscaDados(DatamodelEntidade model, int first, int pageSize,
-					String sortField, SortOrder sortOrder, Map<String, Object> filters) throws Exception {
-				return BeanPlaneta.this.load(model.getDadosBuscaNave(), model.getFiltro());
+			public InterfaceEntidade[] buscaDados(EntidadeDadosServicoSwapi dadosBusca) throws Exception {
+				return servicoSwabi.buscaPlanetasPagina(dadosBusca);
 			}
-		});
-		datamodelNave.init(filtro, servicoSwabi.createEntidadeDadosServicoSwapi());
-		limpaDetalhes();
-	}
-
-	private void limpaDetalhes() {
-	}
-
-	public Map<String, InterfaceEntidade> load(EntidadeDadosServicoSwapi dadosBusca, EntidadeFiltroDjango filtroNave)
-			throws IOException {
-		String mensagem = mensagens.getMessage(ServicoSwabi.CHAVE_SERVICENAVES_PROBLEMADESCONHECIDO, new Object[0],
-				null);
-		Map<String, InterfaceEntidade> retorno = new HashMap<>();
-		Map<String, String> jsonMap = conversorNave.montaMapa(filtroNave);
-		dadosBusca.getQueryParameters().putAll(jsonMap);
-		try {
-			InterfaceEntidade[] dados = servicoSwabi.buscaPlanetasPagina(dadosBusca);
-			List<InterfaceEntidade> lista = verificaDados(new ArrayList<>(Arrays.asList(dados)));
-			for (InterfaceEntidade nave : lista) {
-				retorno.put(nave.getChaveEntidade(), nave);
-			}
-		} catch (ProcessingException ex) {
-			getLogger().warn(mensagem, ex);
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
-		} catch (Exception ex) {
-			getLogger().warn(ex.getMessage(), ex);
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
-		}
-		return retorno;
-	}
-
-	private List<InterfaceEntidade> verificaDados(List<InterfaceEntidade> dados) {
-		return dados;
+		};
+		tabela = new TabelaSwapi(servicoBuscaDadosSwapi, conversor, buscador);
+		tabela.init();
 	}
 
 	public void selecionaPlaneta(EntidadePlaneta planeta) {
 		beanSelecionados.getFiltroSelecionados().setPlaneta(planeta);
 	}
 
-	public DatamodelEntidade getDatamodelNave() {
-		return datamodelNave;
-	}
-
-	public void setDatamodelNave(DatamodelEntidade datamodelNave) {
-		this.datamodelNave = datamodelNave;
+	public String getChave() {
+		return CHAVE_VIEW;
 	}
 
 	public ServicoSwabi getServicoSwabi() {
@@ -135,34 +77,6 @@ public class BeanPlaneta implements InterfaceViewBean {
 		this.servicoSwabi = servicoSwabi;
 	}
 
-	public ConversorNaveSwapi getConversorNave() {
-		return conversorNave;
-	}
-
-	public void setConversorNave(ConversorNaveSwapi conversorNave) {
-		this.conversorNave = conversorNave;
-	}
-
-	public MessageSource getMensagens() {
-		return mensagens;
-	}
-
-	public void setMensagens(MessageSource mensagens) {
-		this.mensagens = mensagens;
-	}
-
-	public BeanBreadcrumb getBeanBreadcrumb() {
-		return beanBreadcrumb;
-	}
-
-	public void setBeanBreadcrumb(BeanBreadcrumb beanBreadcrumb) {
-		this.beanBreadcrumb = beanBreadcrumb;
-	}
-
-	public String getChave() {
-		return chave;
-	}
-
 	public BeanSelecionados getBeanSelecionados() {
 		return beanSelecionados;
 	}
@@ -171,12 +85,28 @@ public class BeanPlaneta implements InterfaceViewBean {
 		this.beanSelecionados = beanSelecionados;
 	}
 
-	public EntidadeFiltroDjango getFiltro() {
-		return filtro;
+	public ServicoBuscaDadosSwapi getServicoBuscaDadosSwapi() {
+		return servicoBuscaDadosSwapi;
 	}
 
-	public void setFiltro(EntidadeFiltroDjango filtro) {
-		this.filtro = filtro;
+	public void setServicoBuscaDadosSwapi(ServicoBuscaDadosSwapi servicoBuscaDadosSwapi) {
+		this.servicoBuscaDadosSwapi = servicoBuscaDadosSwapi;
+	}
+
+	public ConversorSwapi getConversor() {
+		return conversor;
+	}
+
+	public void setConversor(ConversorSwapi conversor) {
+		this.conversor = conversor;
+	}
+
+	public TabelaSwapi getTabela() {
+		return tabela;
+	}
+
+	public void setTabela(TabelaSwapi tabela) {
+		this.tabela = tabela;
 	}
 
 }

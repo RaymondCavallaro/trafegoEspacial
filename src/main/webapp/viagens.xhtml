@@ -7,6 +7,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
 	template="/WEB-INF/template/selecionados.xhtml">
 
 	<ui:define name="pagina.titulo">
@@ -17,24 +18,26 @@
 		<h:form>
 			<p:panel>
 				<f:facet name="header">
-				Filtros
+				Filtrar Viagens
 				</f:facet>
 				<p:panelGrid columns="3" layout="grid">
 					<h:panelGrid columns="2">
-						<h:outputText value="Filtrar aeronave" style="font-weight: bold" />
+						<h:outputText value="Filtrar pela Aeronave"
+							style="font-weight: bold" />
 						<p:inputSwitch value="#{beanViagem.filtroViagem.filtraNave}"
 							style="font-size: 0.8em;"
 							disabled="#{empty beanSelecionados.filtroSelecionados.nave}" />
 					</h:panelGrid>
 					<h:panelGrid columns="2">
-						<h:outputText value="Filtrar Planeta destino"
+						<h:outputText value="Filtrar pelo Planeta de destino"
 							style="font-weight: bold" />
 						<p:inputSwitch value="#{beanViagem.filtroViagem.filtraPlaneta}"
 							style="font-size: 0.8em;"
 							disabled="#{empty beanSelecionados.filtroSelecionados.planeta}" />
 					</h:panelGrid>
 					<h:panelGrid columns="2">
-						<h:outputText value="Filtrar Tripulante" style="font-weight: bold" />
+						<h:outputText value="Filtrar pelo Tripulante"
+							style="font-weight: bold" />
 						<p:inputSwitch value="#{beanViagem.filtroViagem.filtraTripulante}"
 							style="font-size: 0.8em;"
 							disabled="#{empty beanSelecionados.filtroSelecionados.tripulante}" />
@@ -54,11 +57,11 @@
 				<p:messages for="btnNovo" />
 				<p:toolbarGroup>
 					<p:commandButton id="btnNovo" value="#{msgs.map['entidade.novo']}"
-						style="font-size: 0.8em;" icon="ui-icon-plus"
+						style="font-size: 0.8em;" icon="fa fa-fw fa-plus"
 						actionListener="#{beanViagem.novo()}" />
 					<p:commandButton id="btnPesquisar"
 						value="#{msgs.map['entidade.pesquisar']} "
-						style="font-size: 0.8em;" icon="ui-icon-search"
+						style="font-size: 0.8em;" icon="fa fa-fw fa-search"
 						actionListener="#{beanViagem.pesquisar()}" />
 				</p:toolbarGroup>
 			</p:panel>
@@ -86,6 +89,31 @@
 							style="font-weight: bold;" />
 					</p:column>
 					<p:column>
+						<f:facet name="header">#{msgs.map['entidade.viagem.propriedade.tripulantes']}</f:facet>
+						<h:outputText value="#{fn:length(viagem.tripulantes)}"
+							style="font-weight: bold;" />
+						<p:column>
+							<p:commandButton id="btnTripulantes"
+								value="#{msgs.map['entidade.viagem.propriedade.tripulantes.ver']}"
+								title="#{msgs.map['entidade.viagem.propriedade.tripulantes.ver.title']}"
+								style="font-size: 0.8em;" icon="fa fa-fw fa-folder-open"
+								actionListener="#{beanViagem.selecionaViagem(viagem)}"
+								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
+							<p:commandButton id="btnAdicionarTripulante"
+								value="#{msgs.map['entidade.viagem.propriedade.tripulantes.ver']}"
+								title="#{msgs.map['entidade.viagem.propriedade.tripulantes.adicionar.title']}"
+								style="font-size: 0.8em;" icon="fa fa-fw fa-plus"
+								disabled="#{empty beanSelecionados.filtroSelecionados.tripulante}"
+								actionListener="#{beanViagem.adicionarTripulante(viagem)}"
+								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
+						</p:column>
+					</p:column>
+					<p:column>
+						<p:commandButton id="btnSelecionar"
+							value="#{msgs.map['entidade.selecionar']}"
+							title="#{msgs.map['entidade.selecionar.title']}"
+							style="font-size: 0.8em;" icon="fa fa-fw fa-check"
+							actionListener="#{beanViagem.selecionaViagem(viagem)}" />
 						<p:commandButton id="btnFinalizar" style="font-size: 0.8em;"
 							value="#{msgs.map['entidade.viagem.finalizar']}"
 							title="#{msgs.map['entidade.viagem.finalizar.title']}"

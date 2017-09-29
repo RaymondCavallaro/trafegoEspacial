@@ -1,4 +1,4 @@
-package trafegoEspacial.servico;
+package trafegoEspacial.servico.bean;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +22,7 @@ import trafegoEspacial.entidade.EntidadeNave;
 import trafegoEspacial.entidade.EntidadePlaneta;
 import trafegoEspacial.entidade.EntidadeTripulante;
 import trafegoEspacial.entidade.EntidadeViagem;
+import trafegoEspacial.servico.ProcessadorMensagem;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_APPLICATION)
@@ -29,6 +30,7 @@ public class Armazenamento {
 
 	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR = "armazenamento.mapa.filtro.valor";
 	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROIN = "armazenamento.mapa.filtro.in";
+	public static final String CHAVE_ARMAZENAMENTOMAPA_FILTROCONJUNTO = "armazenamento.mapa.filtro.conjunto";
 
 	@Autowired
 	private ProcessadorMensagem processadorArmazenamento;
@@ -65,8 +67,26 @@ public class Armazenamento {
 		return filtrado;
 	}
 
-	public EntidadeNave atualizaNave(EntidadeNave nave) {
+	public EntidadeTripulante atualizaTripulacao(EntidadeTripulante tripulante) {
+		synchronized (mapaTripulante) {
+			if (!mapaTripulante.containsKey(tripulante.getChaveEntidade())) {
+				mapaTripulante.put(tripulante.getChaveEntidade(), tripulante);
+			}
+		}
+		return mapaTripulante.get(tripulante.getChaveEntidade());
+	}
+
+	public EntidadeViagem atualizaViagem(EntidadeViagem viagem) {
 		synchronized (mapaViagem) {
+			if (!mapaViagem.containsKey(viagem.getChave())) {
+				mapaViagem.put(viagem.getChave(), viagem);
+			}
+		}
+		return mapaViagem.get(viagem.getChave());
+	}
+
+	public EntidadeNave atualizaNave(EntidadeNave nave) {
+		synchronized (mapaNave) {
 			if (!mapaNave.containsKey(nave.getChaveEntidade())) {
 				mapaNave.put(nave.getChaveEntidade(), nave);
 			}

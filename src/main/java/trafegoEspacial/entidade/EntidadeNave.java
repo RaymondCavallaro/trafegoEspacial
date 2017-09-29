@@ -32,9 +32,6 @@ public class EntidadeNave extends Ocupante implements InterfaceEntidade {
 	// Ocupacao(EntidadeTripulante.class);
 
 	@JsonIgnore
-	private List<EntidadeTripulante> tripulantes = new ArrayList<EntidadeTripulante>();
-
-	@JsonIgnore
 	private List<EntidadeViagem> viagens = new ArrayList<EntidadeViagem>();
 
 	@JsonIgnore
@@ -109,16 +106,6 @@ public class EntidadeNave extends Ocupante implements InterfaceEntidade {
 	@JsonProperty("model")
 	public void setModelo(String modelo) {
 		this.modelo = modelo;
-	}
-
-	@JsonIgnore
-	public List<EntidadeTripulante> getTripulantes() {
-		return tripulantes;
-	}
-
-	@JsonIgnore
-	public void setTripulantes(List<EntidadeTripulante> tripulantes) {
-		this.tripulantes = tripulantes;
 	}
 
 }

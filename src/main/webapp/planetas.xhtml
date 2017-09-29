@@ -16,11 +16,14 @@
 	<ui:define name="pagina.conteudo">
 		<h:form>
 			<p:panel>
+				<f:facet name="header">
+				Filtros
+				</f:facet>
 				<p:panelGrid columns="1" layout="grid">
 					<h:panelGrid columns="1">
 						<h:outputText value="filtro: " style="font-weight: bold" />
 						<h:panelGrid columns="2">
-							<p:inputText label="Nome" value="#{beanPlaneta.filtro.filtro}"
+							<p:inputText label="Nome" value="#{beanPlaneta.tabela.filtro.filtro}"
 								style="width:350px" />
 						</h:panelGrid>
 					</h:panelGrid>
@@ -29,11 +32,11 @@
 					<p:commandButton id="btnPesquisar"
 						value="#{msgs.map['entidade.pesquisar']} "
 						icon="fa fa-fw fa-search" style="font-size: 0.8em;"
-						actionListener="#{beanPlaneta.pesquisar()}" />
+						actionListener="#{beanPlaneta.tabela.pesquisar()}" />
 				</p:toolbarGroup>
 			</p:panel>
 			<p:panel>
-				<p:dataTable value="#{beanPlaneta.datamodelNave}" var="planeta"
+				<p:dataTable value="#{beanPlaneta.tabela.datamodelEntidade}" var="planeta"
 					lazy="true" rows="10" rowsPerPageTemplate="10,50,100"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					emptyMessage="#{msgs.map['entidade.planeta.lista.vazia']}">
@@ -69,7 +72,7 @@
 						<p:commandButton id="btnSelecionar"
 							value="#{msgs.map['entidade.selecionar']}"
 							title="#{msgs.map['entidade.selecionar.title']}"
-							icon="fa fa-fw fa-folder-open" style="font-size: 0.8em;"
+							icon="fa fa-fw fa-check" style="font-size: 0.8em;"
 							actionListener="#{beanPlaneta.selecionaPlaneta(planeta)}" />
 						<p:commandButton id="btnRotaAtual"
 							disabled="#{empty beanSelecionados.filtroSelecionados.nave}"

@@ -17,12 +17,13 @@
 				<f:facet name="header">
 				Selecionados
 				</f:facet>
-				<p:panelGrid columns="3" layout="grid">
+				<p:panelGrid columns="2" layout="grid">
 					<h:panelGrid columns="3">
-						<h:outputText value="Aeronave" style="font-weight: bold" />
+						<h:outputText value="Plano de Voo da Aeronave"
+							style="font-weight: bold" />
 						<p:commandButton id="btnNave" style="font-size: 0.8em;"
 							value="#{msgs.map['entidade.nave.buscar']}"
-							icon="fa fa-fw fa-search"
+							icon="fa fa-fw fa-edit"
 							action="#{beanBreadcrumb.buscaViewBreadcrumb(beanNave.chave)}" />
 						<h:outputText
 							value=": #{beanSelecionados.filtroSelecionados.nave.nome}"
@@ -32,17 +33,27 @@
 						<h:outputText value="Planeta destino" style="font-weight: bold" />
 						<p:commandButton id="btnPlaneta" style="font-size: 0.8em;"
 							value="#{msgs.map['entidade.planeta.buscar']}"
-							icon="fa fa-fw fa-search"
+							icon="fa fa-fw fa-edit"
 							action="#{beanBreadcrumb.buscaViewBreadcrumb(beanPlaneta.chave)}" />
 						<h:outputText
 							value=": #{beanSelecionados.filtroSelecionados.planeta.nome}"
 							style="font-weight: bold" />
 					</h:panelGrid>
 					<h:panelGrid columns="3">
+						<h:outputText value="Viagem" style="font-weight: bold" />
+						<p:commandButton id="btnViagem" style="font-size: 0.8em;"
+							value="#{msgs.map['entidade.viagem.buscar']}"
+							icon="fa fa-fw fa-edit"
+							action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
+						<h:outputText
+							value=": #{beanSelecionados.filtroSelecionados.viagem.chave}"
+							style="font-weight: bold" />
+					</h:panelGrid>
+					<h:panelGrid columns="3">
 						<h:outputText value="Tripulante" style="font-weight: bold" />
 						<p:commandButton id="btnTripulante" style="font-size: 0.8em;"
 							value="#{msgs.map['entidade.tripulante.buscar']}"
-							icon="fa fa-fw fa-search"
+							icon="fa fa-fw fa-edit"
 							action="#{beanBreadcrumb.buscaViewBreadcrumb(beanTripulante.chave)}" />
 						<h:outputText
 							value=": #{beanSelecionados.filtroSelecionados.tripulante.nome}"

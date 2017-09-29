@@ -7,6 +7,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
 	template="/WEB-INF/template/selecionados.xhtml">
 
 	<ui:define name="pagina.titulo">
@@ -17,65 +18,81 @@
 		<h:form>
 			<p:panel>
 				<f:facet name="header">
-				Filtros
+				Filtrar plano de voo pela Aeronave
 				</f:facet>
 				<p:panelGrid columns="1" layout="grid">
 					<h:panelGrid columns="1">
 						<h:outputText value="filtro: " style="font-weight: bold" />
 						<h:panelGrid columns="2">
-							<p:inputText label="Nome" value="#{beanNave.filtro.filtro}"
+							<p:inputText label="Nome" value="#{beanNave.tabela.filtro.filtro}"
 								style="width:350px" />
 						</h:panelGrid>
 					</h:panelGrid>
 				</p:panelGrid>
 				<p:toolbarGroup>
-					<p:commandButton id="btnPesquisar" style="font-size: 0.8em;"
-						value="#{msgs.map['entidade.pesquisar']}" icon="ui-icon-search"
-						actionListener="#{beanNave.pesquisar()}" />
+					<p:commandButton id="btnPesquisar"
+						value="#{msgs.map['entidade.pesquisar']}"
+						icon="fa fa-fw fa-search" style="font-size: 0.8em;"
+						actionListener="#{beanNave.tabela.pesquisar()}" />
 				</p:toolbarGroup>
 			</p:panel>
 			<p:panel>
-				<p:dataTable value="#{beanNave.datamodelNave}" var="nave"
+				<p:dataTable value="#{beanNave.tabela.datamodelEntidade}" var="nave"
 					lazy="true" rows="10" rowsPerPageTemplate="10,50,100"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					emptyMessage="#{msgs.map['entidade.nave.lista.vazia']}">
 					<f:facet name="header">#{msgs.map['entidade.nave.lista.titulo']}</f:facet>
+
+					<p:columnGroup type="header">
+						<p:row>
+							<p:column colspan="5"
+								headerText="#{msgs.map['entidade.nave.lista.titulo.nave']}" />
+							<p:column rowspan="2"
+								headerText="#{msgs.map['entidade.nave.propriedade.voos']}" />
+						</p:row>
+						<p:row>
+							<p:column headerText="#{msgs.map['entidade.identificacao']}" />
+							<p:column
+								headerText="#{msgs.map['entidade.nave.propriedade.nome']}" />
+							<p:column
+								headerText="#{msgs.map['entidade.nave.propriedade.modelo']}" />
+							<p:column
+								headerText="#{msgs.map['entidade.nave.propriedade.passageiros']}" />
+							<p:column headerText="" />
+						</p:row>
+					</p:columnGroup>
+
 					<p:column>
-						<f:facet name="header">#{msgs.map['entidade.identificacao']}</f:facet>
 						<h:outputText value="#{nave.url}" style="font-weight: bold;" />
 					</p:column>
 					<p:column>
-						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.nome']}</f:facet>
 						<h:outputText value="#{nave.nome}" style="font-weight: bold;" />
 					</p:column>
 					<p:column>
-						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.modelo']}</f:facet>
+						<h:outputText value="#{nave.modelo}" style="font-weight: bold;" />
+					</p:column>
+					<p:column>
 						<h:outputText value="#{nave.passageiros}"
 							style="font-weight: bold;" />
 					</p:column>
 					<p:column>
-						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.passageiros']}</f:facet>
-						<h:outputText value="#{nave.modelo}" style="font-weight: bold;" />
+						<p:commandButton id="btnSelecionar"
+							value="#{msgs.map['entidade.selecionar']}"
+							title="#{msgs.map['entidade.nave.selecionar.title']}"
+							style="font-size: 0.8em;" icon="fa fa-fw fa-check"
+							actionListener="#{beanNave.selecionaNave(nave)}" />
 					</p:column>
 					<p:column>
-						<f:facet name="header">#{msgs.map['entidade.nave.propriedade.voos']}</f:facet>
-						<h:outputText value="#{fn:length(MyBean.somelist)}"
+						<h:outputText value="#{fn:length(nave.viagens)}"
 							style="font-weight: bold;" />
 						<p:column>
 							<p:commandButton id="btnViagens"
 								value="#{msgs.map['entidade.nave.propriedade.voos.ver']}"
 								title="#{msgs.map['entidade.nave.propriedade.voos.ver.title']}"
-								style="font-size: 0.8em;" icon="fa fa-fw fa-search"
+								style="font-size: 0.8em;" icon="fa fa-fw fa-folder-open"
 								actionListener="#{beanNave.selecionaNave(nave)}"
 								action="#{beanBreadcrumb.buscaViewBreadcrumb(beanViagem.chave)}" />
 						</p:column>
-					</p:column>
-					<p:column>
-						<p:commandButton id="btnSelecionar"
-							value="#{msgs.map['entidade.selecionar']}"
-							title="#{msgs.map['entidade.selecionar.title']}"
-							style="font-size: 0.8em;" icon="fa fa-fw fa-folder-open"
-							actionListener="#{beanNave.selecionaNave(nave)}" />
 					</p:column>
 				</p:dataTable>
 			</p:panel>

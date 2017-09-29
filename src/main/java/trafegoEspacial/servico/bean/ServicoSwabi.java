@@ -1,4 +1,4 @@
-package trafegoEspacial.servico;
+package trafegoEspacial.servico.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +29,7 @@ import trafegoEspacial.entidade.EntidadeNave;
 import trafegoEspacial.entidade.EntidadePlaneta;
 import trafegoEspacial.entidade.EntidadeTripulante;
 import trafegoEspacial.entidade.servico.EntidadeDadosServicoSwapi;
+import trafegoEspacial.servico.ProcessadorMensagem;
 
 //import org.apache.http.HttpStatus;
 
@@ -43,7 +44,7 @@ public class ServicoSwabi {
 
 	private static final String CHAVE_SERVICORETORNO = "django.retorno";
 
-	public static final String CHAVE_SERVICENAVES_PROBLEMADESCONHECIDO = "rest.swapi.naves.chamada.problema.desconhecido";
+	public static final String CHAVE_SERVICE_PROBLEMADESCONHECIDO = "rest.swapi.chamada.problema.desconhecido";
 
 	@Autowired
 	private ProcessadorMensagem processadorMensagemSwapi;

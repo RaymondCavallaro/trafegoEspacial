@@ -5,6 +5,7 @@ import java.io.Serializable;
 import trafegoEspacial.entidade.EntidadeNave;
 import trafegoEspacial.entidade.EntidadePlaneta;
 import trafegoEspacial.entidade.EntidadeTripulante;
+import trafegoEspacial.entidade.EntidadeViagem;
 
 public class EntidadeFiltroSelecionados implements Serializable {
 
@@ -15,6 +16,8 @@ public class EntidadeFiltroSelecionados implements Serializable {
 	private EntidadeNave nave;
 
 	private EntidadeTripulante tripulante;
+
+	private EntidadeViagem viagem;
 
 	public EntidadeNave getNave() {
 		return nave;
@@ -38,6 +41,14 @@ public class EntidadeFiltroSelecionados implements Serializable {
 
 	public void setTripulante(EntidadeTripulante tripulante) {
 		this.tripulante = tripulante;
+	}
+
+	public EntidadeViagem getViagem() {
+		return viagem;
+	}
+
+	public void setViagem(EntidadeViagem viagem) {
+		this.viagem = viagem;
 	}
 
 }

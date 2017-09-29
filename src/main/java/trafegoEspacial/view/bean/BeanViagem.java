@@ -2,6 +2,7 @@ package trafegoEspacial.view.bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -20,10 +21,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import trafegoEspacial.comportamento.InterfaceViewBean;
+import trafegoEspacial.entidade.EntidadeNave;
 import trafegoEspacial.entidade.EntidadePlaneta;
+import trafegoEspacial.entidade.EntidadeTripulante;
 import trafegoEspacial.entidade.EntidadeViagem;
 import trafegoEspacial.entidade.view.EntidadeFiltroViagem;
-import trafegoEspacial.servico.Armazenamento;
+import trafegoEspacial.servico.bean.Armazenamento;
+import trafegoEspacial.servico.bean.BeanSelecionados;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
@@ -35,9 +39,9 @@ public final class BeanViagem implements InterfaceViewBean {
 
 	private static final List<String> VIAGEM_STATUS = new ArrayList<>(
 			Arrays.asList(EntidadeViagem.VIAGEM_STATUS_FINALIZADA, EntidadeViagem.VIAGEM_STATUS_EM_CURSO,
-					EntidadeViagem.VIAGEM_STATUS_FUTURO));
+					EntidadeViagem.VIAGEM_STATUS_FUTURO, EntidadeViagem.VIAGEM_STATUS_AGUARDANDOTRIPULACAO));
 
-	private final String chave = "viagens";
+	private static final String CHAVE_VIEW = "viagens";
 
 	@Autowired
 	private Armazenamento armazenamento;
@@ -67,10 +71,38 @@ public final class BeanViagem implements InterfaceViewBean {
 
 	public List<EntidadeViagem> pesquisar() {
 		try {
+			Collection<EntidadeViagem> colecaoFiltrada = null;
+			if (filtroViagem.getFiltraNave() && beanSelecionados.getFiltroSelecionados().getNave() != null) {
+				EntidadeNave nave = armazenamento.atualizaNave(beanSelecionados.getFiltroSelecionados().getNave());
+				colecaoFiltrada = nave.getViagens();
+			}
+			if (colecaoFiltrada == null) {
+				if (filtroViagem.getFiltraTripulante()
+						&& beanSelecionados.getFiltroSelecionados().getTripulante() != null) {
+					EntidadeTripulante tripulante = armazenamento
+							.atualizaTripulacao(beanSelecionados.getFiltroSelecionados().getTripulante());
+					colecaoFiltrada = tripulante.getViagens();
+				} else {
+					colecaoFiltrada = armazenamento.getMapaViagem().values();
+				}
+			} else if (filtroViagem.getFiltraTripulante()
+					&& beanSelecionados.getFiltroSelecionados().getTripulante() != null) {
+				colecaoFiltrada = armazenamento.filtraViagens(colecaoFiltrada,
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROCONJUNTO, "tripulantes",
+						beanSelecionados.getFiltroSelecionados().getTripulante().getUrl());
+			}
+			if (filtroViagem.getFiltraPlaneta() && beanSelecionados.getFiltroSelecionados().getPlaneta() != null) {
+				colecaoFiltrada = armazenamento.filtraViagens(colecaoFiltrada,
+						Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROVALOR, "destino.url",
+						beanSelecionados.getFiltroSelecionados().getPlaneta().getUrl());
+			}
 			ObjectMapper mapper = new ObjectMapper();
 			String json = mapper.writeValueAsString(filtroViagem.getStatus());
-			return armazenamento.filtraViagens(Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROIN, "status", json);
-		} catch (JsonProcessingException e) {
+			return armazenamento.filtraViagens(colecaoFiltrada, Armazenamento.CHAVE_ARMAZENAMENTOMAPA_FILTROIN,
+					"status", json);
+		} catch (
+
+		JsonProcessingException e) {
 			getLogger().info(e.getMessage(), e);
 		}
 		return new ArrayList<>();
@@ -78,42 +110,55 @@ public final class BeanViagem implements InterfaceViewBean {
 
 	public void adiciona(EntidadePlaneta planeta) {
 		beanSelecionados.getFiltroSelecionados().setPlaneta(planeta);
+		adiciona((String) null);
 	}
 
-	private void adiciona() {
-		List<EntidadeViagem> viagensNave = beanSelecionados.getFiltroSelecionados().getNave().getViagens();
-		boolean adicionar = false;
-		if (viagensNave.isEmpty()) {
-			adicionar = true;
-		} else {
-			EntidadePlaneta planetaPartida = viagensNave.get(viagensNave.size() - 1).getDestino();
-			if (beanSelecionados.getFiltroSelecionados().getPlaneta().equals(planetaPartida)) {
-				String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_PARTIDAIGUALDESTINO, new Object[0], null);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
-			} else {
-				adicionar = true;
-			}
-		}
-		if (adicionar) {
-			armazenamento.adicionaViagem(beanSelecionados.getFiltroSelecionados().getNave(),
-					beanSelecionados.getFiltroSelecionados().getPlaneta());
-		}
-	}
-
-	public void novo() {
+	private void adiciona(String clientId) {
 		if (beanSelecionados.getFiltroSelecionados().getNave() == null) {
 			String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_NAOPOSSUINAVE, new Object[0], null);
-			FacesContext.getCurrentInstance().addMessage("btnNovo",
+			FacesContext.getCurrentInstance().addMessage(clientId,
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
 		} else {
 			if (beanSelecionados.getFiltroSelecionados().getPlaneta() == null) {
 				String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_NAOPOSSUIDESTINO, new Object[0], null);
-				FacesContext.getCurrentInstance().addMessage("btnNovo",
+				FacesContext.getCurrentInstance().addMessage(clientId,
 						new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
 			} else {
-				adiciona();
+				List<EntidadeViagem> viagensNave = beanSelecionados.getFiltroSelecionados().getNave().getViagens();
+				boolean adicionar = false;
+				if (viagensNave.isEmpty()) {
+					adicionar = true;
+				} else {
+					EntidadePlaneta planetaPartida = viagensNave.get(viagensNave.size() - 1).getDestino();
+					if (beanSelecionados.getFiltroSelecionados().getPlaneta().equals(planetaPartida)) {
+						String mensagem = mensagens.getMessage(CHAVE_VALIDACAO_PARTIDAIGUALDESTINO, new Object[0],
+								null);
+						FacesContext.getCurrentInstance().addMessage(null,
+								new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
+					} else {
+						adicionar = true;
+					}
+				}
+				if (adicionar) {
+					armazenamento.adicionaViagem(beanSelecionados.getFiltroSelecionados().getNave(),
+							beanSelecionados.getFiltroSelecionados().getPlaneta());
+				}
 			}
+		}
+
+	}
+
+	public void novo() {
+		adiciona("btnNovo");
+	}
+
+	public void adicionarTripulante(EntidadeViagem viagem) {
+		viagem = armazenamento.atualizaViagem(viagem);
+		EntidadeTripulante tripulante = armazenamento
+				.atualizaTripulacao(beanSelecionados.getFiltroSelecionados().getTripulante());
+		if (!viagem.getTripulantes().contains(tripulante)) {
+			viagem.getTripulantes().add(tripulante);
+			tripulante.getViagens().add(viagem);
 		}
 	}
 
@@ -129,7 +174,7 @@ public final class BeanViagem implements InterfaceViewBean {
 				assert (resultado != null);
 				assert (resultado.size() == 1);
 				int indexCurso = viagem.getNave().getViagens().indexOf(resultado.get(0));
-				for (int i = indexCurso; i == index; i++) {
+				for (int i = indexCurso; i <= index; i++) {
 					viagem.getNave().getViagens().get(i).setStatus(EntidadeViagem.VIAGEM_STATUS_FINALIZADA);
 				}
 			} catch (JsonProcessingException e) {
@@ -141,6 +186,10 @@ public final class BeanViagem implements InterfaceViewBean {
 		if (index > 0) {
 
 		}
+	}
+
+	public void selecionaViagem(EntidadeViagem viagem) {
+		beanSelecionados.getFiltroSelecionados().setViagem(viagem);
 	}
 
 	public List<String> getViagemStatus() {
@@ -164,7 +213,7 @@ public final class BeanViagem implements InterfaceViewBean {
 	}
 
 	public String getChave() {
-		return chave;
+		return CHAVE_VIEW;
 	}
 
 	public BeanSelecionados getBeanSelecionados() {

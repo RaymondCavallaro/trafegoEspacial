@@ -1,6 +1,8 @@
 package trafegoEspacial.entidade;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -20,6 +22,9 @@ public class EntidadeTripulante extends Ocupante implements InterfaceEntidade {
 	private String nome;
 	@JsonProperty("gender")
 	private String genero;
+
+	@JsonIgnore
+	private List<EntidadeViagem> viagens = new ArrayList<EntidadeViagem>();
 
 	@JsonIgnore
 	private Map<String, Object> ignore = new HashMap<String, Object>();
@@ -68,6 +73,16 @@ public class EntidadeTripulante extends Ocupante implements InterfaceEntidade {
 	@JsonProperty("gender")
 	public void setGenero(String genero) {
 		this.genero = genero;
+	}
+
+	@JsonIgnore
+	public List<EntidadeViagem> getViagens() {
+		return viagens;
+	}
+
+	@JsonIgnore
+	public void setViagens(List<EntidadeViagem> viagens) {
+		this.viagens = viagens;
 	}
 
 }
