@@ -1,4 +1,4 @@
-package trafegoEspacial.view.componente;
+package trafegoEspacial.ui.componente;
 
 import java.util.ArrayList;
 import java.util.HashMap;

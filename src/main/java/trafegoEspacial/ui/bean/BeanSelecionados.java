@@ -1,4 +1,4 @@
-package trafegoEspacial.servico.bean;
+package trafegoEspacial.ui.bean;
 
 import javax.annotation.PostConstruct;
 

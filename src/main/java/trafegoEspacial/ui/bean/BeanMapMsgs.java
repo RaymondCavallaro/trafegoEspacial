@@ -1,4 +1,4 @@
-package trafegoEspacial.view.bean;
+package trafegoEspacial.ui.bean;
 
 import java.util.AbstractMap;
 import java.util.Locale;

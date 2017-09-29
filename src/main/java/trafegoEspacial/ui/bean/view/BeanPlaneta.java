@@ -1,4 +1,4 @@
-package trafegoEspacial.view.bean;
+package trafegoEspacial.ui.bean.view;
 
 import javax.annotation.PostConstruct;
 
@@ -15,10 +15,10 @@ import trafegoEspacial.comportamento.InterfaceViewBean;
 import trafegoEspacial.comportamento.TabelaSwapi;
 import trafegoEspacial.entidade.EntidadePlaneta;
 import trafegoEspacial.entidade.servico.EntidadeDadosServicoSwapi;
-import trafegoEspacial.servico.bean.BeanSelecionados;
 import trafegoEspacial.servico.bean.ConversorSwapi;
 import trafegoEspacial.servico.bean.ServicoBuscaDadosSwapi;
 import trafegoEspacial.servico.bean.ServicoSwabi;
+import trafegoEspacial.ui.bean.BeanSelecionados;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)

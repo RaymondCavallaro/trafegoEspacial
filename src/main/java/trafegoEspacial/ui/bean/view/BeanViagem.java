@@ -1,4 +1,4 @@
-package trafegoEspacial.view.bean;
+package trafegoEspacial.ui.bean.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import trafegoEspacial.entidade.EntidadeTripulante;
 import trafegoEspacial.entidade.EntidadeViagem;
 import trafegoEspacial.entidade.view.EntidadeFiltroViagem;
 import trafegoEspacial.servico.bean.Armazenamento;
-import trafegoEspacial.servico.bean.BeanSelecionados;
+import trafegoEspacial.ui.bean.BeanSelecionados;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)

@@ -23,7 +23,7 @@ import trafegoEspacial.comportamento.InterfaceEntidade;
 import trafegoEspacial.comportamento.TabelaSwapi;
 import trafegoEspacial.entidade.servico.EntidadeDadosServicoSwapi;
 import trafegoEspacial.entidade.view.EntidadeFiltroDjango;
-import trafegoEspacial.view.componente.DatamodelEntidade;
+import trafegoEspacial.ui.componente.DatamodelEntidade;
 
 @Component
 @Scope(WebApplicationContext.SCOPE_APPLICATION)

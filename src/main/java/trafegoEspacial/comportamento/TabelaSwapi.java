@@ -9,7 +9,7 @@ import org.primefaces.model.SortOrder;
 import trafegoEspacial.entidade.view.EntidadeFiltroDjango;
 import trafegoEspacial.servico.bean.ConversorSwapi;
 import trafegoEspacial.servico.bean.ServicoBuscaDadosSwapi;
-import trafegoEspacial.view.componente.DatamodelEntidade;
+import trafegoEspacial.ui.componente.DatamodelEntidade;
 
 public class TabelaSwapi {
 
