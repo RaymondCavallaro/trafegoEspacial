@@ -18,7 +18,7 @@ import trafegoEspacial.ui.bean.BeanSelecionados;
 import trafegoEspacial.ui.bean.view.BeanViagem;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(value = { "file:src/main/resources/config/Spring-geral.xml" })
+@ContextConfiguration(value = { "file:src/main/resources/config/spring/applicationContext-geral.xml" })
 public final class BeanViagemTest {
 
 	private Armazenamento armazenamento;
@@ -51,10 +51,12 @@ public final class BeanViagemTest {
 		armazenamento = new Armazenamento();
 		armazenamento.setMapaTripulante(new HashMap<String, EntidadeTripulante>());
 		armazenamento.setMapaViagem(new HashMap<String, EntidadeViagem>());
+		beanViagem.setArmazenamento(armazenamento);
 
 		beanSelecionados = new BeanSelecionados();
 		beanSelecionados.setFiltroSelecionados(new EntidadeFiltroSelecionados());
 		beanSelecionados.getFiltroSelecionados().setTripulante(tripulanteASerAdicionado);
+		beanViagem.setBeanSelecionados(beanSelecionados);
 
 		/*
 		 * realizacao das atividades que serao testadas dos itens da aplicacao
